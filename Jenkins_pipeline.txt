@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'us-east-1' // Change to your AWS region
+        AWS_CREDENTIALS_ID = 'Serverless' // AWS credentials ID from Jenkins
+        S3_BUCKET = 'ecommerce-frontend-77110' // Replace with your S3 bucket name
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Thanveerv95/Serverless-Frontend.git'
+            }
+        }
+
+        stage('Deploy to S3') {
+            steps {
+                withAWS(credentials: 'Serverless', region: 'us-east-1') {
+                    sh 'aws s3 sync . s3://${S3_BUCKET} --delete'
+                }
+            }
+        }
+    }
+}
